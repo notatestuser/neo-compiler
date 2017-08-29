@@ -470,7 +470,11 @@ namespace Neo.Compiler.MSIL
                 case CodeEx.Bne_Un:
                 case CodeEx.Bne_Un_S:
                     {
-                        _Convert1by1(VM.OpCode.NUMNOTEQUAL, src, to);
+                        _Convert1by1(VM.OpCode.ABS, src, to);
+                        _Convert1by1(VM.OpCode.SWAP, null, to);
+                        _Convert1by1(VM.OpCode.ABS, null, to);
+                        _Convert1by1(VM.OpCode.SWAP, null, to);
+                        _Convert1by1(VM.OpCode.NUMNOTEQUAL, null, to);
                         var code = _Convert1by1(VM.OpCode.JMPIF, null, to, new byte[] { 0, 0 });
                         code.needfix = true;
                         code.srcaddr = src.tokenAddr_Index;
@@ -478,8 +482,6 @@ namespace Neo.Compiler.MSIL
                     break;
                 case CodeEx.Blt:
                 case CodeEx.Blt_S:
-                case CodeEx.Blt_Un:
-                case CodeEx.Blt_Un_S:
                     {
                         _Convert1by1(VM.OpCode.LT, src, to);
                         var code = _Convert1by1(VM.OpCode.JMPIF, null, to, new byte[] { 0, 0 });
@@ -487,10 +489,21 @@ namespace Neo.Compiler.MSIL
                         code.srcaddr = src.tokenAddr_Index;
                     }
                     break;
+                case CodeEx.Blt_Un:
+                case CodeEx.Blt_Un_S:
+                    {
+                        _Convert1by1(VM.OpCode.ABS, src, to);
+                        _Convert1by1(VM.OpCode.SWAP, null, to);
+                        _Convert1by1(VM.OpCode.ABS, null, to);
+                        _Convert1by1(VM.OpCode.SWAP, null, to);
+                        _Convert1by1(VM.OpCode.LT, null, to);
+                        var code = _Convert1by1(VM.OpCode.JMPIF, null, to, new byte[] { 0, 0 });
+                        code.needfix = true;
+                        code.srcaddr = src.tokenAddr_Index;
+                    }
+                    break;
                 case CodeEx.Ble:
                 case CodeEx.Ble_S:
-                case CodeEx.Ble_Un:
-                case CodeEx.Ble_Un_S:
                     {
                         _Convert1by1(VM.OpCode.LTE, src, to);
                         var code = _Convert1by1(VM.OpCode.JMPIF, null, to, new byte[] { 0, 0 });
@@ -498,10 +511,21 @@ namespace Neo.Compiler.MSIL
                         code.srcaddr = src.tokenAddr_Index;
                     }
                     break;
+                case CodeEx.Ble_Un:
+                case CodeEx.Ble_Un_S:
+                    {
+                        _Convert1by1(VM.OpCode.ABS, src, to);
+                        _Convert1by1(VM.OpCode.SWAP, null, to);
+                        _Convert1by1(VM.OpCode.ABS, null, to);
+                        _Convert1by1(VM.OpCode.SWAP, null, to);
+                        _Convert1by1(VM.OpCode.LTE, null, to);
+                        var code = _Convert1by1(VM.OpCode.JMPIF, null, to, new byte[] { 0, 0 });
+                        code.needfix = true;
+                        code.srcaddr = src.tokenAddr_Index;
+                    }
+                    break;
                 case CodeEx.Bgt:
                 case CodeEx.Bgt_S:
-                case CodeEx.Bgt_Un:
-                case CodeEx.Bgt_Un_S:
                     {
                         _Convert1by1(VM.OpCode.GT, src, to);
                         var code = _Convert1by1(VM.OpCode.JMPIF, null, to, new byte[] { 0, 0 });
@@ -509,12 +533,37 @@ namespace Neo.Compiler.MSIL
                         code.srcaddr = src.tokenAddr_Index;
                     }
                     break;
+                case CodeEx.Bgt_Un:
+                case CodeEx.Bgt_Un_S:
+                    {
+                        _Convert1by1(VM.OpCode.ABS, src, to);
+                        _Convert1by1(VM.OpCode.SWAP, null, to);
+                        _Convert1by1(VM.OpCode.ABS, null, to);
+                        _Convert1by1(VM.OpCode.SWAP, null, to);
+                        _Convert1by1(VM.OpCode.GT, null, to);
+                        var code = _Convert1by1(VM.OpCode.JMPIF, null, to, new byte[] { 0, 0 });
+                        code.needfix = true;
+                        code.srcaddr = src.tokenAddr_Index;
+                    }
+                    break;
                 case CodeEx.Bge:
                 case CodeEx.Bge_S:
+                    {
+
+                        _Convert1by1(VM.OpCode.GTE, src, to);
+                        var code = _Convert1by1(VM.OpCode.JMPIF, null, to, new byte[] { 0, 0 });
+                        code.needfix = true;
+                        code.srcaddr = src.tokenAddr_Index;
+                    }
+                    break;
                 case CodeEx.Bge_Un:
                 case CodeEx.Bge_Un_S:
                     {
-                        _Convert1by1(VM.OpCode.GTE, src, to);
+                        _Convert1by1(VM.OpCode.ABS, src, to);
+                        _Convert1by1(VM.OpCode.SWAP, null, to);
+                        _Convert1by1(VM.OpCode.ABS, null, to);
+                        _Convert1by1(VM.OpCode.SWAP, null, to);
+                        _Convert1by1(VM.OpCode.GTE, null, to);
                         var code = _Convert1by1(VM.OpCode.JMPIF, null, to, new byte[] { 0, 0 });
                         code.needfix = true;
                         code.srcaddr = src.tokenAddr_Index;
