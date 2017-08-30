@@ -235,6 +235,11 @@ namespace Neo.Compiler.JVM
                     _Convert1by1(VM.OpCode.ADD, src, to);
                     return 0;
                 }
+                else if(name== "java.math.BigInteger::subtract")
+                {
+                    _Convert1by1(VM.OpCode.SUB, src, to);
+                    return 0;
+                }
                 else if (name == "java.math.BigInteger::multiply")
                 {
                     _Convert1by1(VM.OpCode.MUL, src, to);
@@ -298,6 +303,11 @@ namespace Neo.Compiler.JVM
                 else if(c.Class== "java.lang.StringBuilder")
                 {
                     return _ConvertStringBuilder(c.Name, null, to);
+                }
+                else  if(name== "java.util.Arrays::equals")
+                {
+                    _Convert1by1(VM.OpCode.EQUAL, null, to);
+                    return 0;
                 }
             }
 
