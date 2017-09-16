@@ -11,7 +11,7 @@
     <AssemblyName>neoj</AssemblyName>
     <PackageId>Neo.Compiler.JVM</PackageId>
     <RuntimeIdentifiers>win10-x64</RuntimeIdentifiers>
-    <RuntimeFrameworkVersion>1.0.4</RuntimeFrameworkVersion>
+    <RuntimeFrameworkVersion>1.1.2</RuntimeFrameworkVersion>
     <RootNamespace>Neo.Compiler</RootNamespace>
     <Company>The Neo Project</Company>
     <Product>Neo.Compiler.JVM</Product>
