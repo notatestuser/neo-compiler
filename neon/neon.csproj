@@ -24,9 +24,11 @@
     <DebugSymbols>False</DebugSymbols>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_MainNet|AnyCPU'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_TestNet|AnyCPU'" />
+
   <ItemGroup>
-    <PackageReference Include="AntShares.MonoCecil" Version="1.0.0" />
-    <PackageReference Include="Neo.VM" Version="2.0.3" />
+    <ProjectReference Include="..\..\neo-vm\src\neo-vm\neo-vm.csproj" />
   </ItemGroup>
 
 </Project>
