@@ -312,7 +312,15 @@ namespace Neo.Compiler.MSIL
                     //}
                     //else
                     {
-                        var addr = addrconv[c.srcaddr];
+                        try
+                        {
+                            var addr = addrconv[c.srcaddr];
+                        }
+                        catch
+                        {
+                            throw new Exception("cannot convert addr in: " + to.name + "\r\n");
+                        }
+
                         Int16 addroff = (Int16)(addr - c.addr);
                         c.bytes = BitConverter.GetBytes(addroff);
                         c.needfix = false;
