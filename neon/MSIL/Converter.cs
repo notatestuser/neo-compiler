@@ -799,7 +799,7 @@ namespace Neo.Compiler.MSIL
                             }
                             else
                             {
-                                throw new Exception("not support type Ldsfld");
+                                throw new Exception("not support type Ldsfld\r\n   in: " + to.name + "\r\n");
                             }
                             break;
                         }
@@ -838,10 +838,10 @@ namespace Neo.Compiler.MSIL
                     break;
                 default:
 #if WITHPDB
-                    logger.Log("unsupported instruction " + src.code);
+                    logger.Log("unsupported instruction " + src.code + "\r\n   in: " + to.name + "\r\n");
                     break;
 #else
-                    throw new Exception("unsupported instruction " + src.code);
+                    throw new Exception("unsupported instruction " + src.code + "\r\n   in: " + to.name + "\r\n");
 #endif
             }
 
