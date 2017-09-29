@@ -6,23 +6,23 @@ using System.Text;
 namespace Neo.Compiler.MSIL
 {
 
-    public class Converter
-    {
-        public static byte[] Convert(System.IO.Stream dllstream, ILogger logger = null)
-        {
-            var module = new ILModule();
-            module.LoadModule(dllstream, null);
-            if (logger == null)
-            {
-                logger = new DefLogger();
-            }
-            var converter = new ModuleConverter(logger);
-            //有异常的话在 convert 函数中会直接throw 出来
-            var antmodule = converter.Convert(module);
-            return antmodule.Build();
-        }
+    //public class Converter
+    //{
+    //    public static byte[] Convert(System.IO.Stream dllstream, ILogger logger = null)
+    //    {
+    //        var module = new ILModule();
+    //        module.LoadModule(dllstream, null);
+    //        if (logger == null)
+    //        {
+    //            logger = new DefLogger();
+    //        }
+    //        var converter = new ModuleConverter(logger);
+    //        //有异常的话在 convert 函数中会直接throw 出来
+    //        var antmodule = converter.Convert(module);
+    //        return antmodule.Build();
+    //    }
 
-    }
+    //}
     class DefLogger : ILogger
     {
         public void Log(string log)
@@ -61,7 +61,8 @@ namespace Neo.Compiler.MSIL
                 foreach (var m in t.Value.methods)
                 {
                     if (m.Value.method == null) continue;
-                    if (m.Value.method.IsAddOn || m.Value.method.IsRemoveOn) continue;//event 自动生成的代码，不要
+                    if (m.Value.method.IsAddOn || m.Value.method.IsRemoveOn)
+                        continue;//event 自动生成的代码，不要
                     AntsMethod nm = new AntsMethod();
                     if (m.Key == ".cctor")
                     {
@@ -92,12 +93,30 @@ namespace Neo.Compiler.MSIL
                     {
                         continue;
                     }
-                    if (m.Value.method.IsAddOn || m.Value.method.IsRemoveOn) continue;//event 自动生成的代码，不要
+                    if (m.Value.method.IsAddOn || m.Value.method.IsRemoveOn)
+                        continue;//event 自动生成的代码，不要
 
                     var nm = this.methodLink[m.Value];
 
                     //try
                     {
+                        nm.returntype = m.Value.returntype;
+                        foreach (var src in m.Value.paramtypes)
+                        {
+                            nm.paramtypes.Add(new AntsParam(src.name, src.type));
+                        }
+
+                        byte[] outcall;string name;
+                        if (IsAppCall(m.Value.method, out outcall))
+                            continue;
+                        if (IsNonCall(m.Value.method))
+                            continue;
+                        if (IsOpCall(m.Value.method, out name))
+                            continue;
+                        if (IsSysCall(m.Value.method, out name))
+                            continue;
+
+
                         this.ConvertMethod(m.Value, nm);
                     }
                     //catch (Exception err)
@@ -198,11 +217,6 @@ namespace Neo.Compiler.MSIL
 
         private void ConvertMethod(ILMethod from, AntsMethod to)
         {
-            to.returntype = from.returntype;
-            foreach (var src in from.paramtypes)
-            {
-                to.paramtypes.Add(new AntsParam(src.name, src.type));
-            }
 
 
             this.addr = 0;
@@ -297,20 +311,26 @@ namespace Neo.Compiler.MSIL
 
                     )
                 {
-                    //need neo.vm update.
-                    //if (c.code == VM.OpCode.SWITCH)
-                    //{
-                    //    for (var i = 0; i < c.srcaddrswitch.Length; i++)
-                    //    {
-                    //        var addr = addrconv[c.srcaddrswitch[i]];
-                    //        Int16 addroff = (Int16)(addr - c.addr);
-                    //        var bs = BitConverter.GetBytes(addroff);
-                    //        c.bytes[i * 2 + 2] = bs[0];
-                    //        c.bytes[i * 2 + 2 + 1] = bs[1];
-                    //        c.needfix = false;
-                    //    }
-                    //}
-                    //else
+#if SWITCHOPEN
+                    if (c.code == VM.OpCode.SWITCH)
+                    {
+                        for (var i = 0; i < c.srcaddrstarget.Length; i++)
+                        {
+                            var addr = addrconv[c.srcaddrstarget[i]];
+                            Int16 addroff = (Int16)(addr - c.addr);
+                            var bs = BitConverter.GetBytes(addroff);
+                            var bsv = BitConverter.GetBytes(c.srcaddrsvalue[i]);
+                            c.bytes[i * 6 + 2 + 0] = bsv[0];
+                            c.bytes[i * 6 + 2 + 1] = bsv[1];
+                            c.bytes[i * 6 + 2 + 2] = bsv[2];
+                            c.bytes[i * 6 + 2 + 3] = bsv[3];
+                            c.bytes[i * 6 + 2 + 4] = bs[0];
+                            c.bytes[i * 6 + 2 + 5] = bs[1];
+                            c.needfix = false;
+                        }
+                    }
+                    else
+#endif
                     {
                         try
                         {
@@ -350,7 +370,7 @@ namespace Neo.Compiler.MSIL
 
                 case CodeEx.Ldc_I4:
                 case CodeEx.Ldc_I4_S:
-                    skipcount= _ConvertPushI4WithConv(method, src.tokenI32, src, to);
+                    skipcount = _ConvertPushI4WithConv(method, src.tokenI32, src, to);
                     break;
                 case CodeEx.Ldc_I4_0:
                     _ConvertPush(0, src, to);
@@ -380,7 +400,7 @@ namespace Neo.Compiler.MSIL
                     _ConvertPush(8, src, to);
                     break;
                 case CodeEx.Ldc_I4_M1:
-                    skipcount = _ConvertPushI4WithConv(method ,- 1, src, to);
+                    skipcount = _ConvertPushI4WithConv(method, -1, src, to);
                     break;
                 case CodeEx.Ldc_I8:
                     skipcount = _ConvertPushI8WithConv(method, src.tokenI64, src, to);
@@ -457,19 +477,25 @@ namespace Neo.Compiler.MSIL
                     break;
                 case CodeEx.Switch:
                     {
+#if SWITCHOPEN
+                        var addrdata = new byte[src.tokenAddr_Switch.Length * 6 + 2];
+                        var shortaddrcount = (UInt16)src.tokenAddr_Switch.Length;
+                        //0 1 字节 switch 数量
+                        var data = BitConverter.GetBytes(shortaddrcount);
+                        addrdata[0] = data[0];
+                        addrdata[1] = data[1];
+                        var code = _Convert1by1(VM.OpCode.SWITCH, src, to, addrdata);
+                        code.needfix = true;
+                        code.srcaddrstarget = new int[shortaddrcount];
+                        code.srcaddrsvalue = new int[shortaddrcount];
+                        for (var i = 0; i < shortaddrcount; i++)
+                        {
+                            code.srcaddrsvalue[i] = i;
+                            code.srcaddrstarget[i] = src.tokenAddr_Switch[i];
+                        }
+#else
                         throw new Exception("need neo.VM update.");
-                        //var addrdata = new byte[src.tokenAddr_Switch.Length * 2 + 2];
-                        //var shortaddrcount = (UInt16)src.tokenAddr_Switch.Length;
-                        //var data = BitConverter.GetBytes(shortaddrcount);
-                        //addrdata[0] = data[0];
-                        //addrdata[1] = data[1];
-                        //var code = _Convert1by1(VM.OpCode.SWITCH, src, to, addrdata);
-                        //code.needfix = true;
-                        //code.srcaddrswitch = new int[shortaddrcount];
-                        //for (var i = 0; i < shortaddrcount; i++)
-                        //{
-                        //    code.srcaddrswitch[i] = src.tokenAddr_Switch[i];
-                        //}
+#endif
                     }
                     break;
                 case CodeEx.Brtrue:
