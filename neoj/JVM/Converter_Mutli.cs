@@ -333,12 +333,14 @@ namespace Neo.Compiler.JVM
                 {
                     return _ConvertStringBuilder(c.Name, null, to);
                 }
-                else if (name == "java.util.Arrays::equals")
+                else if (name == "java.util.Arrays::equals"||
+                    name == "kotlin.jvm.internal.Intrinsics::areEqual")
                 {
                     _Convert1by1(VM.OpCode.EQUAL, null, to);
                     return 0;
                 }
-                else if (name == "kotlin.jvm.internal.Intrinsics::checkParameterIsNotNull")
+                else if (name == "kotlin.jvm.internal.Intrinsics::checkParameterIsNotNull" ||
+                     name == "kotlin.jvm.internal.Intrinsics::checkExpressionValueIsNotNull")
                 {
                     _Convert1by1(VM.OpCode.DROP, null, to);
                     _Convert1by1(VM.OpCode.DROP, null, to);
