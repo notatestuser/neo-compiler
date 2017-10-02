@@ -377,6 +377,10 @@ namespace Neo.Compiler.JVM
                 case javaloader.NormalizedByteCode.__laload:
                     _Convert1by1(VM.OpCode.PICKITEM, src, to);
                     break;
+                case javaloader.NormalizedByteCode.__baload:
+                    _ConvertPush(1, src, to);
+                    _Convert1by1(VM.OpCode.SUBSTR, null, to);
+                    break;
                 case javaloader.NormalizedByteCode.__iastore:
                 case javaloader.NormalizedByteCode.__aastore:
                 case javaloader.NormalizedByteCode.__lastore:

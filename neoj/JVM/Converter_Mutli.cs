@@ -294,15 +294,21 @@ namespace Neo.Compiler.JVM
                 else if (name == "java.math.BigInteger::valueOf" ||
                     name == "java.math.BigInteger::intValue" ||
                     name == "java.lang.Boolean::valueOf" ||
+                    name == "java.lang.Byte::valueOf" ||
                     name == "java.lang.Character::valueOf" ||
                     name == "java.lang.String::valueOf" ||
                     name == "java.lang.Long::valueOf" ||
-                    name == "java.math.BigInteger::toByteArray")
+                    name == "java.lang.Integer::valueOf" ||
+                    name == "java.math.BigInteger::toByteArray" ||
+                    name == "kotlin.jvm.internal.Intrinsics::throwNpe")
                 {
                     //donothing
                     return 0;
                 }
-                else if (name == "java.lang.Boolean::booleanValue")
+                else if (name == "java.lang.Boolean::booleanValue" ||
+                    name == "java.lang.Integer::integerValue" ||
+                    name == "java.lang.Long::longValue" ||
+                    name == "java.math.BigInteger::longValue")
                 {
                     _Convert1by1(VM.OpCode.NOP, src, to);
                     return 0;
