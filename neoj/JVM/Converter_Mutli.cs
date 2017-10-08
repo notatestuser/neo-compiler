@@ -333,6 +333,7 @@ namespace Neo.Compiler.JVM
                 }
                 else if (name == "java.lang.Boolean::booleanValue"||
                     name == "java.lang.Integer::integerValue" ||
+                    name == "java.lang.Integer::intValue" ||
                     name == "java.lang.Long::longValue" ||
                     name == "java.math.BigInteger::longValue")
                 {
