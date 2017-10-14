@@ -106,7 +106,7 @@ namespace Neo.Compiler.MSIL
                             nm.paramtypes.Add(new AntsParam(src.name, src.type));
                         }
 
-                        byte[] outcall;string name;
+                        byte[] outcall; string name;
                         if (IsAppCall(m.Value.method, out outcall))
                             continue;
                         if (IsNonCall(m.Value.method))
@@ -235,7 +235,7 @@ namespace Neo.Compiler.MSIL
                 else
                 {
                     //在return之前加入清理参数代码
-                    if (src.code == CodeEx.Ret)//before return 
+                    if (src.code == CodeEx.Ret)//before return
                     {
                         _insertEndCode(from, to, src);
                     }
@@ -311,40 +311,21 @@ namespace Neo.Compiler.MSIL
 
                     )
                 {
-#if SWITCHOPEN
-                    if (c.code == VM.OpCode.SWITCH)
-                    {
-                        for (var i = 0; i < c.srcaddrstarget.Length; i++)
-                        {
-                            var addr = addrconv[c.srcaddrstarget[i]];
-                            Int16 addroff = (Int16)(addr - c.addr);
-                            var bs = BitConverter.GetBytes(addroff);
-                            var bsv = BitConverter.GetBytes(c.srcaddrsvalue[i]);
-                            c.bytes[i * 6 + 2 + 0] = bsv[0];
-                            c.bytes[i * 6 + 2 + 1] = bsv[1];
-                            c.bytes[i * 6 + 2 + 2] = bsv[2];
-                            c.bytes[i * 6 + 2 + 3] = bsv[3];
-                            c.bytes[i * 6 + 2 + 4] = bs[0];
-                            c.bytes[i * 6 + 2 + 5] = bs[1];
-                            c.needfix = false;
-                        }
-                    }
-                    else
-#endif
-                    {
-                        try
-                        {
-                            var addr = addrconv[c.srcaddr];
-                        }
-                        catch
-                        {
-                            throw new Exception("cannot convert addr in: " + to.name + "\r\n");
-                        }
 
-                        Int16 addroff = (Int16)(addr - c.addr);
+                    try
+                    {
+                        var _addr = addrconv[c.srcaddr];
+                        Int16 addroff = (Int16)(_addr - c.addr);
                         c.bytes = BitConverter.GetBytes(addroff);
                         c.needfix = false;
                     }
+                    catch
+                    {
+                        throw new Exception("cannot convert addr in: " + to.name + "\r\n");
+                    }
+
+
+
                 }
             }
         }
@@ -477,25 +458,19 @@ namespace Neo.Compiler.MSIL
                     break;
                 case CodeEx.Switch:
                     {
-#if SWITCHOPEN
-                        var addrdata = new byte[src.tokenAddr_Switch.Length * 6 + 2];
-                        var shortaddrcount = (UInt16)src.tokenAddr_Switch.Length;
-                        //0 1 字节 switch 数量
-                        var data = BitConverter.GetBytes(shortaddrcount);
-                        addrdata[0] = data[0];
-                        addrdata[1] = data[1];
-                        var code = _Convert1by1(VM.OpCode.SWITCH, src, to, addrdata);
-                        code.needfix = true;
-                        code.srcaddrstarget = new int[shortaddrcount];
-                        code.srcaddrsvalue = new int[shortaddrcount];
-                        for (var i = 0; i < shortaddrcount; i++)
-                        {
-                            code.srcaddrsvalue[i] = i;
-                            code.srcaddrstarget[i] = src.tokenAddr_Switch[i];
-                        }
-#else
                         throw new Exception("need neo.VM update.");
-#endif
+                        //var addrdata = new byte[src.tokenAddr_Switch.Length * 2 + 2];
+                        //var shortaddrcount = (UInt16)src.tokenAddr_Switch.Length;
+                        //var data = BitConverter.GetBytes(shortaddrcount);
+                        //addrdata[0] = data[0];
+                        //addrdata[1] = data[1];
+                        //var code = _Convert1by1(VM.OpCode.SWITCH, src, to, addrdata);
+                        //code.needfix = true;
+                        //code.srcaddrswitch = new int[shortaddrcount];
+                        //for (var i = 0; i < shortaddrcount; i++)
+                        //{
+                        //    code.srcaddrswitch[i] = src.tokenAddr_Switch[i];
+                        //}
                     }
                     break;
                 case CodeEx.Brtrue:

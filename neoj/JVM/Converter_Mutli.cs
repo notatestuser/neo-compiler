@@ -325,8 +325,7 @@ namespace Neo.Compiler.JVM
                     name == "java.lang.String::valueOf" ||
                     name == "java.lang.Long::valueOf" ||
                     name == "java.lang.Integer::valueOf" ||
-                    name == "java.math.BigInteger::toByteArray" ||
-                    name == "kotlin.jvm.internal.Intrinsics::throwNpe")
+                    name == "java.math.BigInteger::toByteArray")
                 {
                     //donothing
                     return 0;
@@ -390,7 +389,7 @@ namespace Neo.Compiler.JVM
 
             if (calltype == 2)
             {
-                //opcode call 
+                //opcode call
             }
             else
             {//翻转参数入栈顺序
@@ -738,7 +737,7 @@ namespace Neo.Compiler.JVM
         //    _Convert1by1(VM.OpCode.PICK, null, to);
 
 
-        //    _Convert1by1(VM.OpCode.SWAP, null, to);//把item 拿上來 
+        //    _Convert1by1(VM.OpCode.SWAP, null, to);//把item 拿上來
         //    _ConvertPush(id, null, to);
         //    _Convert1by1(VM.OpCode.ARRAYSETITEM, null, to);//修改值
         //    return 0;
