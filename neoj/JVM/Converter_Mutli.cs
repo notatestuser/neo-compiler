@@ -376,7 +376,7 @@ namespace Neo.Compiler.JVM
                 }
                 else if(name== "kotlin.jvm.internal.Intrinsics::throwNpe")
                 {
-                    _Convert1by1(VM.OpCode.THROW, src, to);
+                    // do nothing
                     return 0;
                 }
             }
