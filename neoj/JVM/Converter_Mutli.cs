@@ -383,7 +383,7 @@ namespace Neo.Compiler.JVM
 
             if (calltype == 0)
             {
-                throw new Exception("unknown call:" + name);
+                throw new Exception("unknown call:" + "\r\n   in: " + to.name + "\r\n");
             }
             var pcount = paramTypes.Count;
 

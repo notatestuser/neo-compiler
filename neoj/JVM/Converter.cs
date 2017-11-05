@@ -206,7 +206,7 @@ namespace Neo.Compiler.JVM
                     if (src.code == javaloader.NormalizedByteCode.__return
                         || src.code == javaloader.NormalizedByteCode.__ireturn
                         || src.code == javaloader.NormalizedByteCode.__lreturn
-                        || src.code == javaloader.NormalizedByteCode.__areturn)//before return 
+                        || src.code == javaloader.NormalizedByteCode.__areturn)//before return
                     {
                         _insertEndCode(from, to, src);
                     }
@@ -257,6 +257,7 @@ namespace Neo.Compiler.JVM
         }
         private void ConvertAddrInMethod(AntsMethod to)
         {
+            logger.Log("ConvertAddrInMethod in: " + to.name);
             foreach (var c in to.body_Codes.Values)
             {
                 if (c.needfix)
